@@ -1,27 +1,32 @@
 import React, { Component } from 'react'
-import {connect} from 'react-redux'
-import PropTypes from 'prop-types'
-import {fetchTopRatedMovies} from '../store/actions'
-
-
 import logo from './logo.svg'
 import './MovieLibrary.css'
-import {getMovies} from '../store/selectors'
+import {getMovies} from '../utils/getMovies'
 import MoviesList from './MoviesList'
 
 class MovieLibrary extends Component {
 
   static propTypes = {
-
+  
   }
 
-  componentDidMount() {
-    const {fetchTopRatedMovies} = this.props
-    fetchTopRatedMovies()
-  }
+  state = {
+    movies : []
+  } 
 
-  render() {
-    const {movies} = this.props
+  async componentDidMount() {
+
+    var allMovies = []
+    for( var i = 1 ; i <4; i ++){
+       var aux = (await getMovies(i))
+      console.log(aux)
+      allMovies =  allMovies.concat(aux.results)
+      console.log(allMovies)
+    }
+    this.setState({movies:allMovies})
+   
+  }
+  render() {    
     return (
       <div className="MovieLibrary">
         <header className="ML-header">
@@ -29,13 +34,11 @@ class MovieLibrary extends Component {
           <h1 className="ML-title">Movies</h1>
         </header>
         <div className="ML-intro">
-          { movies.length && <MoviesList movies={movies}/> }
+          {this.state.movies.length && <MoviesList movies={this.state.movies}/> }
         </div>
       </div>
     );
   }
 }
 
-export default connect(state => ({
-  movies: getMovies(state)
-}), {fetchTopRatedMovies})(MovieLibrary)
+export default MovieLibrary

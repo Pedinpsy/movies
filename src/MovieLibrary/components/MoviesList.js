@@ -1,8 +1,6 @@
 import React, { Component, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import classNames from 'classnames'
-
-import TMDBImage from './TMDBImage'
 import './MoviesList.css'
 import SliderButton from './SliderButton'
 
@@ -58,11 +56,11 @@ export default class MoviesList extends PureComponent {
 
   onClickNext = () =>{
     var div = document.getElementById('container')
-    document.getElementById('container').scroll(div.scrollLeft+200,0)
+    document.getElementById('container').scroll(div.scrollLeft+1000,0)
   }
   onClickPrev = () =>{
     var div = document.getElementById('container')
-    document.getElementById('container').scroll(div.scrollLeft-200,0)
+    document.getElementById('container').scroll(div.scrollLeft-1000,0)
   }
   render() {
     const {movies} = this.props
