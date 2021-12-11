@@ -4,81 +4,121 @@ import classNames from 'classnames'
 
 import TMDBImage from './TMDBImage'
 import './MoviesList.css'
+import SliderButton from './SliderButton'
 
-export default class MoviesList extends PureComponent {
+import Modal from 'react-modal';
+import "react-modal-overlay/dist/index.css";
+const customStyles = {
+  overlay:{zIndex:999},
+  content: {
+    zIndex:999,
+    top: '50%',
+    left: '50%',
+    width: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
 
+export default class MoviesList extends PureComponent {  
+
+  openModal = () =>{
+    this.setState({
+      modalIsOpen: true})
+
+  }
+  closeModal = () =>{   
+    this.setState({
+      modalIsOpen: false})
+    
+
+  }
   static propTypes = {
     movies: PropTypes.array.isRequired
   }
 
   state = {
-    selectedMovie: null
+    selectedMovie: {}
   }
 
-  handleSelectMovie = item => this.setState({selectedMovie: item})
+  handleSelectMovie = item => {
+    this.setState({selectedMovie: item})
+    this.openModal()
+
+  }
 
   handleSortingChange = sortingType => console.log(sortingType)
 
+  onClickNext = () =>{
+    var div = document.getElementById('container')
+    document.getElementById('container').scroll(div.scrollLeft+200,0)
+  }
+  onClickPrev = () =>{
+    var div = document.getElementById('container')
+    document.getElementById('container').scroll(div.scrollLeft-200,0)
+  }
   render() {
-
     const {movies} = this.props
     const {selectedMovie} = this.state
-
+    
     return (
-      <div className="movies-list">
-        <div className="items">
-          <div>
-            <span>Sort by:</span>
-            <SortingOptions onChange={this.handleSortingChange}/>
-          </div>
+    <div>  
+      <div className="upconteiner">
+        <div id ="container" className="container"> 
+           <SliderButton  onClick = {this.onClickNext} type="next" />
+            <SliderButton onClick = {this.onClickPrev} type="prev" />      
           {
             movies.map(movie =>
               <MovieListItem key={movie.id} movie={movie} isSelected={selectedMovie===movie} onSelect={this.handleSelectMovie}/>
             )
-          }
-        </div>
-        {
-          selectedMovie && (
-            <ExpandedMovieItem movie={selectedMovie} />
-          )
-        }
+            }
+
+        </div>  
       </div>
+     
+      <Modal isOpen={this.state.modalIsOpen}        
+        onRequestClose={this.closeModal}
+        style={customStyles}
+        contentLabel="Movie">
+          <div className ="close">
+           <span styles="float:rigth" onClick={this.closeModal}>X</span>           
+           </div>
+        <div className="description">
+          <h2>{selectedMovie.title}({selectedMovie.original_title})</h2>
+          <div><strong>Rank</strong>:{selectedMovie.vote_average}({selectedMovie.vote_count}) <span></span></div>
+          <div><strong>Popularuty</strong>:{selectedMovie.popularity} <span></span></div>
+          <div><strong>Overview</strong>:{selectedMovie.overview} <span></span></div>
+          <div><strong>Release date </strong>:{selectedMovie.release_date} <span></span></div>
+        </div>
+      </Modal>
+      </div>
+    
     )
   }
 }
-
-const ExpandedMovieItem = ({movie: {title, original_title, poster_path, overview, vote_average, vote_count}}) => (
-  <div className="expanded-movie-item">
-    <TMDBImage src={poster_path} className="poster" />
-    <div className="description">
-      <h2>{title}({original_title})</h2>
-      <div><h4>Rank(votes count)</h4>: <span>{vote_average}({vote_count})</span></div>
-      <span>{overview}</span>
-    </div>
-  </div>
-)
-
 class MovieListItem extends Component {
-
   handleClick = () => {
     const {movie, onSelect} = this.props
     onSelect(movie)
   }
-
   render() {
-    const {movie: {title, vote_average}, isSelected} = this.props
+    const {movie: {title, vote_average,poster_path,backdrop_path}, isSelected} = this.props
     return (
-      <div className={classNames('movie-list-item', {'selected': isSelected})} onClick={this.handleClick}>{title}({vote_average})</div>
+   
+        <div style={ {backgroundImage:`url(https://image.tmdb.org/t/p/w500/${poster_path}),url(https://bitsofco.de/content/images/2018/12/broken-1.png)`,backgroundRepeat: "no-repeat", backgroundSize:"60%",backgroundPosition: "center"} } className={classNames('item', {'selected': isSelected})} onClick={this.handleClick}>
+     
+      
+
+      </div>
     )
   }
 }
-
 class SortingOptions extends Component {
-
   state = {
     value: ''
   }
-
   handleChange = e => {
     const selectedValue = e.target.value
     const {onChange} = this.props
