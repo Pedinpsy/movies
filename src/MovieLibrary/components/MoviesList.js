@@ -32,7 +32,6 @@ export default class MoviesList extends PureComponent {
   closeModal = () =>{   
     this.setState({
       modalIsOpen: false})
-    
 
   }
   static propTypes = {
@@ -40,7 +39,10 @@ export default class MoviesList extends PureComponent {
   }
 
   state = {
-    selectedMovie: {}
+    selectedMovie: {},
+    movies: {},
+    sort:(a) => {return a}
+  
   }
 
   handleSelectMovie = item => {
@@ -49,7 +51,10 @@ export default class MoviesList extends PureComponent {
 
   }
 
-  handleSortingChange = sortingType => console.log(sortingType)
+  handleSortingChange = sortingFunction => {
+
+    this.setState({sort: sortingFunction} )
+  }
 
   onClickNext = () =>{
     var div = document.getElementById('container')
@@ -65,12 +70,17 @@ export default class MoviesList extends PureComponent {
     
     return (
     <div>  
+      <div>
+        <span>Sort by:</span>
+          <SortingOptions onChange={this.handleSortingChange}/>
+        </div>
       <div className="upconteiner">
+
         <div id ="container" className="container"> 
            <SliderButton  onClick = {this.onClickNext} type="next" />
             <SliderButton onClick = {this.onClickPrev} type="prev" />      
           {
-            movies.map(movie =>
+            this.state.sort(movies).map(movie =>
               <MovieListItem key={movie.id} movie={movie} isSelected={selectedMovie===movie} onSelect={this.handleSelectMovie}/>
             )
             }
@@ -117,20 +127,45 @@ class MovieListItem extends Component {
 }
 class SortingOptions extends Component {
   state = {
-    value: ''
+    value: '',
+    sortFunctions :{}
+  }
+
+ sortFunctions =
+  {
+    "name_asc": {
+      "function" : function(movieList){
+      return movieList.sort((a, b) => a.title.localeCompare(b.title))},
+      "label": "A -> Z",    
+    },
+    "name_desc": {
+      "function" : function(movieList){
+      
+      return movieList.sort((a, b) => b.title.localeCompare(a.title))},
+      "label": "Z -> A",    
+    },
+    "rating": {
+      "function" : function(movieList){
+    
+      return movieList.sort((a, b) =>a.vote_average-b.vote_average)},
+      "label": "Rating",    
+    },
+    
+
   }
   handleChange = e => {
     const selectedValue = e.target.value
     const {onChange} = this.props
     this.setState({value: selectedValue})
-    onChange(selectedValue)
+    
+    onChange(this.sortFunctions[selectedValue].function)
   }
 
-  render() {
 
+  render() {
     return (
-      <select value={this.state.value} onChange={this.handleChange}>
-        <option value=""></option>
+      <select value={this.state.value} onChange={this.handleChange}>      
+              
         <option value="name_asc">A -> Z</option>
         <option value="name_desc">Z -> A</option>
         <option value="rating">Rating</option>
