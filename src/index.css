@@ -4,5 +4,5 @@ body {
   font-family: sans-serif;
   background-color:rgb(34,34,34,1);
   overflow-x: hidden;
-  overflow-y: hidden;  
+  overflow-y: scroll;  
 }

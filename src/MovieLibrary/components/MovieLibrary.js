@@ -3,42 +3,94 @@ import logo from './logo.svg'
 import './MovieLibrary.css'
 import {getMovies} from '../utils/getMovies'
 import MoviesList from './MoviesList'
+import { useEffect, useState, useRef } from 'react';
 
-class MovieLibrary extends Component {
 
-  static propTypes = {
-  
-  }
 
-  state = {
-    movies : []
-  } 
+const MovieLibrary=() => {
+  const [movies = [], setMovies] = useState([]);
+  const [numPage, setNumPage] = useState([]);
+ 
 
-  async componentDidMount() {
-
-    var allMovies = []
-    for( var i = 1 ; i <4; i ++){
-       var aux = (await getMovies(i))
-      console.log(aux)
-      allMovies =  allMovies.concat(aux.results)
-      console.log(allMovies)
+  onscroll= (event) => {
+    console.log(document.documentElement.offsetHeight)
+    console.log(window)
+    console.log(event.path[1].scrollY + window.innerHeight )
+    if(window.scrollY + window.innerHeight >= document.documentElement.offsetHeight-100 ){
+      
+      
+        getMovies(numPage+1).then((e)=>{
+          setMovies((prev) => [...prev, e.results] );
+    
+        }
+        
+        
+        ) 
+        setNumPage(numPage+1) 
+     
     }
-    this.setState({movies:allMovies})
-   
+    
   }
-  render() {    
+
+
+   componentDidMount:{  
+
+    var movies1 = []
+
+    useEffect(() => {
+    getMovies(1).then((e)=>{
+      setMovies((prev) => [...prev, e.results] );
+
+    }
+    
+    
+    )  
+  },[])
+
+  useEffect(() => {
+    getMovies(2).then((e)=>{
+      setMovies((prev) => [...prev, e.results] );
+
+    }
+    
+    
+    )  
+  },[])
+  
+  useEffect(() => {
+    getMovies(3).then((e)=>{
+      setMovies((prev) => [...prev, e.results] );
+
+    }
+    
+    
+    )  
+    setNumPage(3)
+  },[])
+      
+
+    
+   
+  }   
     return (
-      <div className="MovieLibrary">
+        <div overflowY="scroll" onscroll={onscroll} className="MovieLibrary">
         <header className="ML-header">
           <img src={logo} className="ML-logo" alt="logo" />
           <h1 className="ML-title">Movies</h1>
         </header>
-        <div className="ML-intro">
-          {this.state.movies.length && <MoviesList movies={this.state.movies}/> }
+
+        {movies.map((e,index) => (
+          <div className="ML-intro">
+          {movies.length && <MoviesList numberOfrow = {index} movies={e}/> }
         </div>
+      ))}
+       
+  
+    
+
       </div>
     );
-  }
-}
+  
+};
 
 export default MovieLibrary

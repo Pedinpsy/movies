@@ -21,6 +21,7 @@ const customStyles = {
 };
 
 export default class MoviesList extends PureComponent {  
+  
 
   openModal = () =>{
     this.setState({
@@ -33,7 +34,8 @@ export default class MoviesList extends PureComponent {
 
   }
   static propTypes = {
-    movies: PropTypes.array.isRequired
+    movies: PropTypes.array.isRequired,
+   
   }
 
   state = {
@@ -55,17 +57,20 @@ export default class MoviesList extends PureComponent {
   }
 
   onClickNext = () =>{
-    var div = document.getElementById('container')
-    document.getElementById('container').scroll(div.scrollLeft+1000,0)
+   
+    var div = document.getElementById("container"+this.props.numberOfrow)
+    document.getElementById("container"+this.props.numberOfrow).scroll(div.scrollLeft+1000,0)
   }
   onClickPrev = () =>{
-    var div = document.getElementById('container')
-    document.getElementById('container').scroll(div.scrollLeft-1000,0)
+    var div = document.getElementById("container"+this.props.numberOfrow)
+    document.getElementById("container"+this.props.numberOfrow).scroll(div.scrollLeft-1000,0)
   }
+
+  
   render() {
     const {movies} = this.props
-    const {selectedMovie} = this.state
-    
+    const {numberOfrow} = this.props
+    const {selectedMovie} = this.state    
     return (
     <div>  
       <div>
@@ -74,7 +79,7 @@ export default class MoviesList extends PureComponent {
         </div>
       <div className="upconteiner">
 
-        <div id ="container" className="container"> 
+        <div id ={"container"+numberOfrow} className="container"> 
            <SliderButton  onClick = {this.onClickNext} type="next" />
             <SliderButton onClick = {this.onClickPrev} type="prev" />      
           {
@@ -115,7 +120,7 @@ class MovieListItem extends Component {
     const {movie: {title, vote_average,poster_path,backdrop_path}, isSelected} = this.props
     return (
    
-        <div style={ {backgroundImage:`url(https://image.tmdb.org/t/p/w500/${poster_path}),url(https://bitsofco.de/content/images/2018/12/broken-1.png)`,backgroundRepeat: "no-repeat", backgroundSize:"60%",backgroundPosition: "center"} } className={classNames('item', {'selected': isSelected})} onClick={this.handleClick}>
+        <div style={ {backgroundImage:`url(https://image.tmdb.org/t/p/w500/${poster_path}),url(https://bitsofco.de/content/images/2018/12/broken-1.png)`,backgroundRepeat: "no-repeat", backgroundSize:"90%",backgroundPosition: "center"} } className={classNames('item', {'selected': isSelected})} onClick={this.handleClick}>
      
       
 
